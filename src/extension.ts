@@ -19,6 +19,18 @@ export function activate(context: vscode.ExtensionContext) {
 
     panel.webview.html = getWebviewContent();
 
+    // Prefill folder if a workspace is already open
+    const existingFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    if (existingFolder) {
+      setTimeout(() => {
+        panel.webview.postMessage({
+          command: 'selectedFolder',
+          folderPath: existingFolder
+        });
+      }, 100); // slight delay ensures webview is ready
+    }
+
+
     panel.webview.onDidReceiveMessage(
       async message => {
         if (message.command === 'createProject') {
